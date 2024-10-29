@@ -30,17 +30,36 @@ if ($type === "register") {
 
         // Verificar se já existe e-mail cadastrado
         if ($userDao->findByEmail($email) === false) {
-            // true = prossegue
-            echo "Nenhum usuário foi encontrado! <br>";
+
+            $user = new User();
+
+            // Criação de token e senha
+            $userToken = $user->generateToken();
+            $finalPassword = $user->generatePassword($password);
+
+            $user->name = $name;
+            $user->lastname = $lastname;
+            $user->email = $email;
+            $user->password = $finalPassword;
+            $user->token = $userToken;
+
+            $auth = true;
+
+            $userDao->create($user, $auth);
 
         } else {
+
             $message->setMessage("O E-mail já está cadastrado. Por favor, digite um novo.", "error", "back");
+
         }
 
         if (strlen($password) >= 8) {
             // true = senha com mais de 8 dígitos
+
         } else {
+
             $message->setMessage("A senha deve ter no mínimo 8 dígitos.", "error", "back");
+
         }
 
         if ($password === $confirmpassword) {
